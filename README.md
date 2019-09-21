@@ -1,5 +1,5 @@
 ## CINEMAS
-##### Independent school task
+#### **Independent school task**
 In this repository: 
 
 "Cinemas" project: Uploading the classes as they are starting to get in shape.
