@@ -14,7 +14,7 @@ namespace Cinemas
     /// </summary>
     class Auditorium
     {
-        static public byte ID = 0;
+        static public byte ID { get; private set; } = 0;
         public byte Id { get; private set; }
         public byte Rows { get; private set; }
         public byte Columns { get; private set; }
@@ -24,7 +24,7 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogCaller();
+            Program.LogThisCaller();
 #endif
             #endregion
             Id = ++ID;
@@ -37,7 +37,7 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogCaller();
+            Program.LogThisCaller();
 #endif
             #endregion
             if (OwnProjections.Count < 5)
@@ -53,7 +53,7 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogCaller();
+            Program.LogThisCaller();
 #endif
             #endregion
             return $"Auditorium No.{Id}.";
@@ -63,12 +63,10 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogCaller();
+            Program.LogThisCaller();
 #endif
             #endregion
-            Auditorium auditorium = obj as Auditorium;
-            return auditorium
-                   is object
+            return obj is Auditorium auditorium
                 && (Id == auditorium.Id);
         }
         #endregion

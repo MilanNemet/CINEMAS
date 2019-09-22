@@ -1,5 +1,5 @@
 ﻿#define DEBUG
-//#undef DEBUG
+#undef DEBUG
 
 using System;
 using System.Collections.Generic;
@@ -9,20 +9,18 @@ using System.Threading.Tasks;
 
 namespace Cinemas
 {
-    class Movie
+    class Movie : CommonAttributes
     {
-        public string Name { get; private set; }
         public TimeSpan MinutesOfLength { get; private set; }
 
         #region CTOR for Name and MinutesOfLength
-        public Movie(string Name, byte MinutesOfLength=0)
+        public Movie(string Name, byte MinutesOfLength=0) : base(Name)
         {
             #region debug message
 #if DEBUG
-            Program.LogCaller();
+            Program.LogThisCaller();
 #endif
             #endregion
-            this.Name = Name;
             this.MinutesOfLength = TimeSpan.FromMinutes(MinutesOfLength);
         }
         #endregion
@@ -32,7 +30,7 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogCaller();
+            Program.LogThisCaller();
 #endif
             #endregion
             return Name;
@@ -41,12 +39,10 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogCaller();
+            Program.LogThisCaller();
 #endif
             #endregion
-            Movie movie = obj as Movie;
-            return movie
-                   is object
+            return obj is Movie movie
                 && String.Equals(Name, movie.Name);
         }
         #endregion

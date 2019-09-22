@@ -1,5 +1,5 @@
 ﻿#define DEBUG
-//#undef DEBUG
+#undef DEBUG
 
 using System;
 using System.Collections.Generic;
@@ -14,10 +14,11 @@ namespace Cinemas
     /// </summary>
     class Projection
     {
+        private string name;
         public string Name
         {
-            get { return $"Projection of:\"{Name}\""; }
-            private set { Name = OwnMovie.Name; }
+            get { return $"Projection of:\"{name.ToUpper()}\""; }
+            private set { name = value; }
         }
         public enum Seat
         {
@@ -32,11 +33,12 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogCaller();
+            Program.LogThisCaller();
 #endif
             #endregion
             OwnAuditorium = Au;
             OwnMovie = Mov;
+            Name = OwnMovie.Name;
             OwnSeats = new Seat[Au.Rows,Au.Columns];
             InitSeats();
         }
@@ -45,7 +47,7 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogCaller();
+            Program.LogThisCaller();
 #endif
             #endregion
             byte rows = OwnAuditorium.Rows;
@@ -58,11 +60,44 @@ namespace Cinemas
                 }
             }
         }
+        public void PrintOwnSeatsByAvailability(char Av= '■', char UnAv= '■')//□■ ○● ☺☻
+        {
+            #region debug message
+#if DEBUG
+            Program.LogThisCaller();
+#endif
+            #endregion
+            byte rows = OwnAuditorium.Rows;
+            byte cols = OwnAuditorium.Columns;
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    switch (OwnSeats[i,j])
+                    {
+                        case Seat.Available:
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.Write($"{Av} ");
+                            goto ResetColor;
+                        case Seat.UnAvailable:
+                            Console.ForegroundColor = ConsoleColor.DarkRed;
+                            Console.Write($"{UnAv} ");
+                            goto ResetColor;
+                        default:
+                            break;
+                        ResetColor:
+                            Console.ResetColor();
+                            break;
+                    }
+                }
+                Console.WriteLine();
+            }
+        }
         public bool ReserveSeat(byte row, byte col)
         {
             #region debug message
 #if DEBUG
-            Program.LogCaller();
+            Program.LogThisCaller();
 #endif
             #endregion
             if (GetSeatAvailability(row, col) == Seat.Available)
@@ -76,7 +111,7 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogCaller();
+            Program.LogThisCaller();
 #endif
             #endregion
             if (GetSeatAvailability(row, col) == Seat.UnAvailable)
@@ -90,7 +125,7 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogCaller();
+            Program.LogThisCaller();
 #endif
             #endregion
             return OwnSeats[row, col];
@@ -99,7 +134,7 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogCaller();
+            Program.LogThisCaller();
 #endif
             #endregion
             OwnSeats[row, col] = OwnSeats[row, col] ^ Seat.UnAvailable;
@@ -110,7 +145,7 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogCaller();
+            Program.LogThisCaller();
 #endif
             #endregion
             return Name;
@@ -119,12 +154,10 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogCaller();
+            Program.LogThisCaller();
 #endif
             #endregion
-            Projection projection = obj as Projection;
-            return projection
-                   is object
+            return obj is Projection projection
                 && String.Equals(Name, projection.Name);
         }
         #endregion
