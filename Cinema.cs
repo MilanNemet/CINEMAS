@@ -19,7 +19,7 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogThisCaller();
+            Program.LogItsCaller();
 #endif
             #endregion
             OwnAuditoriums = new Dictionary<int, Auditorium>();
@@ -30,14 +30,15 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogThisCaller();
+            Program.LogItsCaller();
 #endif
             #endregion
-            for (int i = 0; i < NumberOfAuditoriums; i++)
+            for (int indexer = 0; indexer < NumberOfAuditoriums; indexer++)
             {
-                byte rows = Program.EnterByte("Enter the number of rows: ");
-                byte cols = Program.EnterByte("Enter the number of columns: ");
-                OwnAuditoriums.Add(i+1,new Auditorium(rows, cols));
+                byte id = (byte)(indexer + 1);
+                byte rows = IO_Handler.EnterByte("Enter the number of rows: ");
+                byte cols = IO_Handler.EnterByte("Enter the number of columns: ");
+                OwnAuditoriums.Add(id,new Auditorium(id, this, rows, cols));
             }
         }
 
@@ -46,7 +47,7 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogThisCaller();
+            Program.LogItsCaller();
 #endif
             #endregion
             return Name;
@@ -55,7 +56,7 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogThisCaller();
+            Program.LogItsCaller();
 #endif
             #endregion
             return obj is Cinema cinema

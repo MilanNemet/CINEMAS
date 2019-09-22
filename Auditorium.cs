@@ -14,37 +14,51 @@ namespace Cinemas
     /// </summary>
     class Auditorium
     {
-        static public byte ID { get; private set; } = 0;
         public byte Id { get; private set; }
         public byte Rows { get; private set; }
         public byte Columns { get; private set; }
-        public Dictionary<string,Projection> OwnProjections { get; private set; }
+        public Dictionary<string, Projection> OwnProjections { get; private set; }
+        public Cinema OwnerCinema;
 
-        public Auditorium(byte Rows, byte Columns)
+        public Auditorium(byte Id, Cinema Owner, byte Rows, byte Columns)
         {
             #region debug message
 #if DEBUG
-            Program.LogThisCaller();
+            Program.LogItsCaller();
 #endif
             #endregion
-            Id = ++ID;
+            this.Id = Id;
+            this.OwnerCinema = Owner;
             this.Rows = Rows;
             this.Columns = Columns;
-            OwnProjections = new Dictionary<string,Projection>();
+            OwnProjections = new Dictionary<string, Projection>();
         }
 
         public void CreateNewProjection()
         {
             #region debug message
 #if DEBUG
-            Program.LogThisCaller();
+            Program.LogItsCaller();
 #endif
             #endregion
             if (OwnProjections.Count < 5)
             {
-                string movieName = Program.EnterString("Enter the name of the movie beeing projected: ");
-                byte movieLength = Program.EnterByte("Enter the length of this movie in minutes: ");
-                OwnProjections.Add(movieName, new Projection(this, new Movie(movieName, movieLength)));
+                string movieName = IO_Handler.EnterString($"{OwnerCinema}/{this}\n" +
+                    $"Enter the name of the movie beeing projected: ");
+                byte movieLength = IO_Handler.EnterByte("Enter the length of this movie in minutes: ");
+                Movie currentMovie = new Movie(movieName, movieLength);
+                if (ObjectContainer.AllMovies.Contains(currentMovie))
+                {
+                    OwnProjections.Add(movieName, new Projection(this, currentMovie));
+                }
+                else
+                {
+                    OwnProjections.Add(movieName, new Projection(this, new Movie(movieName, movieLength)));
+                }
+            }
+            else
+            {
+                new OperationCanceledException("Projection Limit Reached");
             }
         }
 
@@ -53,7 +67,7 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogThisCaller();
+            Program.LogItsCaller();
 #endif
             #endregion
             return $"Auditorium No.{Id}.";
@@ -63,7 +77,7 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogThisCaller();
+            Program.LogItsCaller();
 #endif
             #endregion
             return obj is Auditorium auditorium

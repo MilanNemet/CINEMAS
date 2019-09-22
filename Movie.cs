@@ -13,7 +13,6 @@ namespace Cinemas
     {
         public TimeSpan MinutesOfLength { get; private set; }
 
-        #region CTOR for Name and MinutesOfLength
         public Movie(string Name, byte MinutesOfLength=0) : base(Name)
         {
             #region debug message
@@ -22,8 +21,11 @@ namespace Cinemas
 #endif
             #endregion
             this.MinutesOfLength = TimeSpan.FromMinutes(MinutesOfLength);
+            if (!ObjectContainer.AllMovies.Contains(this))
+            {
+                ObjectContainer.AllMovies.Add(this); //kell-e a filmeknek listát tárolni a lejátszó termeikről?
+            }
         }
-        #endregion
 
         #region OVERRIDES
         public override string ToString()

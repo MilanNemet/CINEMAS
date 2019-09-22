@@ -10,7 +10,7 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogThisCaller();
+            Program.LogItsCaller();
 #endif
             #endregion
             this.Name = Name;
