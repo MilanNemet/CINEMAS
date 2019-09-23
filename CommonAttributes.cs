@@ -5,12 +5,23 @@ namespace Cinemas
 {
     abstract class CommonAttributes
     {
-        public string Name { get; private set; }
+        private string name;
+        public string Name
+        {
+            get
+            {
+                return name;
+            }
+            private set
+            {
+                name = value.ToUpper();
+            }
+        }
         public CommonAttributes(string Name)
         {
             #region debug message
 #if DEBUG
-            Program.LogItsCaller();
+            IO_Handler.LogItsCaller();
 #endif
             #endregion
             this.Name = Name;

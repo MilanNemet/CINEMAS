@@ -24,7 +24,7 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogItsCaller();
+            IO_Handler.LogItsCaller();
 #endif
             #endregion
             this.Id = Id;
@@ -34,32 +34,37 @@ namespace Cinemas
             OwnProjections = new Dictionary<string, Projection>();
         }
 
-        public void CreateNewProjection()
+        public void AddNewProjection()
         {
             #region debug message
 #if DEBUG
-            Program.LogItsCaller();
+            IO_Handler.LogItsCaller();
 #endif
             #endregion
             if (OwnProjections.Count < 5)
             {
-                string movieName = IO_Handler.EnterString($"{OwnerCinema}/{this}\n" +
-                    $"Enter the name of the movie beeing projected: ");
+                string movieName = IO_Handler.EnterString($"{OwnerCinema}/{this}:\n" +
+                    $"Enter the name of the movie beeing projected: ").ToUpper();
                 byte movieLength = IO_Handler.EnterByte("Enter the length of this movie in minutes: ");
                 Movie currentMovie = new Movie(movieName, movieLength);
-                if (ObjectContainer.AllMovies.Contains(currentMovie))
-                {
-                    OwnProjections.Add(movieName, new Projection(this, currentMovie));
-                }
-                else
-                {
-                    OwnProjections.Add(movieName, new Projection(this, new Movie(movieName, movieLength)));
-                }
+                TestAndCreate(currentMovie);
             }
             else
             {
-                new OperationCanceledException("Projection Limit Reached");
+                throw new OperationCanceledException("Projection Limit Reached");
             }
+        }
+        private void TestAndCreate(Movie movie)
+        {
+                try
+                {
+                    OwnProjections.Add(movie.Name, new Projection(this, movie));
+                    IO_Handler.SuccessMessage($"New projection \"{movie.Name}\" has been added");
+                }
+                catch (ArgumentException)
+                {
+                    IO_Handler.ErrorMessage("Operation canceled: This movie has already beeing projected here!");
+                }
         }
 
         #region OVERRIDES
@@ -67,7 +72,7 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogItsCaller();
+            IO_Handler.LogItsCaller();
 #endif
             #endregion
             return $"Auditorium No.{Id}.";
@@ -77,7 +82,7 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogItsCaller();
+            IO_Handler.LogItsCaller();
 #endif
             #endregion
             return obj is Auditorium auditorium

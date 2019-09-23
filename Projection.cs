@@ -14,35 +14,37 @@ namespace Cinemas
     /// </summary>
     class Projection
     {
-        private string name;
-        public string Name
-        {
-            get { return $"Projection of:\"{name.ToUpper()}\""; }
-            private set { name = value; }
-        }
+        public string Name { get; private set; }
         public enum Seat
         {
             Available = 0x0,
             UnAvailable = 0x1
         }
-        public Auditorium OwnAuditorium { get; private set; }
+        public Auditorium OwnerAuditorium { get; private set; }
         public Movie OwnMovie { get; private set; }
-        public Seat[,] OwnSeats { get; private set; }
+        public Seat[,] Seats { get; private set; }
+        public short ReservedSeatsCount { get; private set; } = 0;
 
-        public Projection(Auditorium Au, Movie Mov)
+        public Projection(Auditorium OwnerAuditorium, Movie OwnMovie)
         {
             #region debug message
 #if DEBUG
             Program.LogThisCaller();
 #endif
             #endregion
-            OwnAuditorium = Au;
-            OwnMovie = Mov;
+            this.OwnerAuditorium = OwnerAuditorium;
+            this.OwnMovie = OwnMovie;
             Name = OwnMovie.Name;
-            OwnSeats = new Seat[Au.Rows,Au.Columns];
+            Seats = new Seat[OwnerAuditorium.Rows,OwnerAuditorium.Columns];
             InitSeats();
+            if (!ObjectContainer.PDB.Contains(this))
+            {
+                ObjectContainer.PDB.Add(this);
+
+            }
         }
 
+        #region Seating Methods
         private void InitSeats()
         {
             #region debug message
@@ -50,13 +52,13 @@ namespace Cinemas
             Program.LogThisCaller();
 #endif
             #endregion
-            byte rows = OwnAuditorium.Rows;
-            byte cols = OwnAuditorium.Columns;
+            byte rows = OwnerAuditorium.Rows;
+            byte cols = OwnerAuditorium.Columns;
             for (int i = 0; i < rows; i++)
             {
                 for (int j = 0; j < cols; j++)
                 {
-                    OwnSeats[i, j] = Seat.Available;
+                    Seats[i, j] = Seat.Available;
                 }
             }
         }
@@ -67,13 +69,13 @@ namespace Cinemas
             Program.LogThisCaller();
 #endif
             #endregion
-            byte rows = OwnAuditorium.Rows;
-            byte cols = OwnAuditorium.Columns;
+            byte rows = OwnerAuditorium.Rows;
+            byte cols = OwnerAuditorium.Columns;
             for (int i = 0; i < rows; i++)
             {
                 for (int j = 0; j < cols; j++)
                 {
-                    switch (OwnSeats[i,j])
+                    switch (Seats[i,j])
                     {
                         case Seat.Available:
                             Console.ForegroundColor = ConsoleColor.Green;
@@ -103,6 +105,7 @@ namespace Cinemas
             if (GetSeatAvailability(row, col) == Seat.Available)
             {
                 FlipSeatAvailabilty(row, col);
+                ReservedSeatsCount++;
                 return true;
             }
             return false;
@@ -117,6 +120,7 @@ namespace Cinemas
             if (GetSeatAvailability(row, col) == Seat.UnAvailable)
             {
                 FlipSeatAvailabilty(row, col);
+                ReservedSeatsCount--;
                 return true;
             }
             return false;
@@ -128,7 +132,7 @@ namespace Cinemas
             Program.LogThisCaller();
 #endif
             #endregion
-            return OwnSeats[row, col];
+            return Seats[row, col];
         }
         private void FlipSeatAvailabilty(byte row, byte col)
         {
@@ -137,8 +141,9 @@ namespace Cinemas
             Program.LogThisCaller();
 #endif
             #endregion
-            OwnSeats[row, col] = OwnSeats[row, col] ^ Seat.UnAvailable;
+            Seats[row, col] = Seats[row, col] ^ Seat.UnAvailable;
         }
+        #endregion
 
         #region OVERRIDES
         public override string ToString()
@@ -148,7 +153,7 @@ namespace Cinemas
             Program.LogThisCaller();
 #endif
             #endregion
-            return Name;
+            return $"Projection of:\"{Name}\"";
         }
         public override bool Equals(object obj)
         {
@@ -158,7 +163,8 @@ namespace Cinemas
 #endif
             #endregion
             return obj is Projection projection
-                && String.Equals(Name, projection.Name);
+                && String.Equals(this.Name, projection.Name)
+                && this.OwnerAuditorium.Equals(projection.OwnerAuditorium);
         }
         #endregion
     }

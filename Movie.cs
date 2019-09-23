@@ -21,9 +21,9 @@ namespace Cinemas
 #endif
             #endregion
             this.MinutesOfLength = TimeSpan.FromMinutes(MinutesOfLength);
-            if (!ObjectContainer.AllMovies.Contains(this))
+            if (!ObjectContainer.MDB.Contains(this))
             {
-                ObjectContainer.AllMovies.Add(this); //kell-e a filmeknek listát tárolni a lejátszó termeikről?
+                ObjectContainer.MDB.Add(this);
             }
         }
 

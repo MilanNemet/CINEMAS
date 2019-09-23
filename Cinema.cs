@@ -15,11 +15,12 @@ namespace Cinemas
     class Cinema : CommonAttributes
     {
         public Dictionary<int, Auditorium> OwnAuditoriums { get; private set; }
+
         public Cinema(string Name, byte NumberOfAuditoriums) : base(Name)
         {
             #region debug message
 #if DEBUG
-            Program.LogItsCaller();
+            IO_Handler.LogItsCaller();
 #endif
             #endregion
             OwnAuditoriums = new Dictionary<int, Auditorium>();
@@ -30,7 +31,7 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogItsCaller();
+            IO_Handler.LogItsCaller();
 #endif
             #endregion
             for (int indexer = 0; indexer < NumberOfAuditoriums; indexer++)
@@ -47,7 +48,7 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogItsCaller();
+            IO_Handler.LogItsCaller();
 #endif
             #endregion
             return Name;
@@ -56,7 +57,7 @@ namespace Cinemas
         {
             #region debug message
 #if DEBUG
-            Program.LogItsCaller();
+            IO_Handler.LogItsCaller();
 #endif
             #endregion
             return obj is Cinema cinema
