@@ -34,6 +34,7 @@ namespace Cinemas
             OwnProjections = new Dictionary<string, Projection>();
         }
 
+        #region Projection Methods
         public void AddNewProjection()
         {
             #region debug message
@@ -51,7 +52,7 @@ namespace Cinemas
             }
             else
             {
-                throw new OperationCanceledException("Projection Limit Reached");
+                IO_Handler.ErrorMessage("Projection Limit Reached");
             }
         }
         private void TestAndCreate(Movie movie)
@@ -66,6 +67,46 @@ namespace Cinemas
                     IO_Handler.ErrorMessage("Operation canceled: This movie has already beeing projected here!");
                 }
         }
+
+        public Projection FindProjectionByName()
+        {
+            #region debug message
+#if DEBUG
+            IO_Handler.LogItsCaller();
+#endif
+            #endregion
+            if (OwnProjections.Count > 0)
+            {
+                return ReturnProjectionByName();
+            }
+            else
+            {
+                throw new InvalidOperationException("Related to this Auditorium, there hasn't been any Projections created yet.");
+            }
+        }
+        private Projection ReturnProjectionByName()
+        {
+            #region debug message
+#if DEBUG
+            IO_Handler.LogItsCaller();
+#endif
+            #endregion
+            string projectionName = "";
+            while (!OwnProjections.ContainsKey(projectionName))
+            {
+                projectionName = IO_Handler.EnterString("Name of the movie you are looking for: ").ToUpper();
+                if (!OwnProjections.ContainsKey(projectionName))
+                {
+                    IO_Handler.ErrorMessage($"There is no such Projection in this Auditorium No#{Id} with the given name!");
+                    Console.WriteLine("Please, pick one from the following:");
+                    IO_Handler.PrintCollection(OwnProjections.Keys);
+                }
+            }
+            Projection Result = OwnProjections[projectionName];
+            IO_Handler.SuccessMessage("Projection found!");
+            return Result;
+        }
+        #endregion
 
         #region OVERRIDES
         public override string ToString()
