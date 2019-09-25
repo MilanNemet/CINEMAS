@@ -2,9 +2,6 @@
 //#undef DEBUG
 
 using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cinemas
 {
@@ -12,6 +9,9 @@ namespace Cinemas
     {
         static void Main()
         {
+            Console.Write("Contorols: \nEnter menu: Enter Key \nQuit menu: Escape Key \nNavigate up: UpArrow \nNavigate down: DownArrow \n\n\tPress any key to continue!");
+            Console.ReadKey(false);
+            Console.Clear();
             PresentationLayer PL = new PresentationLayer();
             PL.MainMenu();
 
