@@ -1,5 +1,5 @@
 ﻿#define DEBUG
-//#undef DEBUG
+#undef DEBUG
 
 using System;
 using System.Collections.Generic;
@@ -36,11 +36,20 @@ namespace Cinemas
             IO_Handler.LogItsCaller();
 #endif
             #endregion
+            byte rows;
+            byte cols;
+            byte id;
             for (int indexer = 0; indexer < NumberOfAuditoriums; indexer++)
             {
-                byte id = (byte)(indexer + 1);
-                byte rows = IO_Handler.EnterByte($"Number of rows for Auditorium #No.{id}: ");
-                byte cols = IO_Handler.EnterByte($"Number of columns for Auditorium #No.{id}: ");
+                id = (byte)(indexer + 1);
+                do
+                {
+                    rows = IO_Handler.EnterByte($"Number of rows for Auditorium #No.{id}: "); 
+                } while (rows<1);
+                do
+                {
+                    cols = IO_Handler.EnterByte($"Number of columns for Auditorium #No.{id}: "); 
+                } while (cols<1);
                 OwnAuditoriums.Add(id,new Auditorium(id, this, rows, cols));
             }
         }

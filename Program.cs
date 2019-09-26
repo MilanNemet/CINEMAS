@@ -1,5 +1,5 @@
 ﻿#define DEBUG
-//#undef DEBUG
+#undef DEBUG
 
 using System;
 
@@ -9,11 +9,13 @@ namespace Cinemas
     {
         static void Main()
         {
+            Console.CursorVisible = false;
             Console.Write("Contorols: \nEnter menu: Enter Key \nQuit menu: Escape Key \nNavigate up: UpArrow \nNavigate down: DownArrow \n\n\tPress any key to continue!");
             Console.ReadKey(false);
             Console.Clear();
             PresentationLayer PL = new PresentationLayer();
-            PL.MainMenu();
+
+            //PL.MainMenu();
 
 
             /*

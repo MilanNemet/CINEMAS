@@ -52,6 +52,7 @@ namespace Cinemas
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.WriteLine(message);
             Console.ResetColor();
+            System.Threading.Thread.Sleep(1000);
         }
         public static void SuccessMessage(string message)
         {
