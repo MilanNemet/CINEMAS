@@ -83,7 +83,7 @@ namespace Cinemas
             DelegateDictionaries["InAuditoriumMenu"] = InAuditoriumMenuMethods;
             DelegateDictionaries["InProjectionMenu"] = InProjectionMenuMethods;
             DelegateDictionaries["ReservationMenu"] = ReservationMenuMethods;
-
+            InfoMenu();
             MainMenu();
         }
 
@@ -214,6 +214,18 @@ namespace Cinemas
         #endregion
 
         #region control+helper functions
+        void InfoMenu()
+        {
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            Console.WriteLine("Contorols:");
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write("Enter menu: EnterKey \nQuit menu: EscapeKey \nNavigate up: UpArrow \nNavigate down: DownArrow \nFirst Menu Item: PageUp \nLast Menu Item: PageDown \n\n");
+            Console.ResetColor();
+            Console.WriteLine("\tPress any key to continue!");
+            Console.ReadKey(false);
+            Console.Clear();
+        }
         void KeepDoingMenu(MenuTitle menuTitle, MenuItem[] MenuItems)
         {
             index = 0;
