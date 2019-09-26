@@ -30,35 +30,48 @@ namespace Cinemas
             Console.Write(message);
             while (!byte.TryParse(Console.ReadLine(), out result))
             {
-                Console.WriteLine("Incorrect value! \nTry again in range of 1-255.\n\n");
+                ErrorMessage("Incorrect value!\nTry again in range of [0-255].");
                 Console.Write(message);
             }
             return result;
         }
         public static void SaveToFile(string[] stringsToSave)
         {
-            string filename = EnterString("Saving to file, please enter the filepath/filename: ");
-            using (FileStream fs = new FileStream(@filename, FileMode.Create))
-            using(StreamWriter sw = new StreamWriter(fs))
+            string filename = "";
+            try
             {
+                filename = EnterString("Saving to file, please enter the filepath/filename: ");
+                FileStream fs = new FileStream(@filename, FileMode.Create);
+                StreamWriter sw = new StreamWriter(fs);
                 for (int i = 0; i < stringsToSave.Length; i++)
                 {
                     sw.WriteLine(stringsToSave[i]);
                 }
+                sw.Flush();
+                fs.Flush();
+                sw.Close();
+                fs.Close();
             }
+            catch (Exception e)
+            {
+                ErrorMessage("File has NOT been saved!\n" + e.Message);
+                throw e;
+            }
+            SuccessMessage($"File has been saved!\n({filename})");
         }
         public static void ErrorMessage(string message)
         {
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.WriteLine(message);
             Console.ResetColor();
-            System.Threading.Thread.Sleep(1000);
+            System.Threading.Thread.Sleep(1500);
         }
         public static void SuccessMessage(string message)
         {
             Console.ForegroundColor = ConsoleColor.DarkGreen;
             Console.WriteLine(message);
             Console.ResetColor();
+            System.Threading.Thread.Sleep(1500);
         }
         public static void PrintCollection<T>(IEnumerable<T> collection)
         {
@@ -66,7 +79,7 @@ namespace Cinemas
             {
                 Console.WriteLine(item);
             }
-        }
+        }   //Not implemented in PresentationLayer, so become obsolete:
     }
 }
     

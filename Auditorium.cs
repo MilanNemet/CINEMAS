@@ -46,6 +46,10 @@ namespace Cinemas
             {
                 string movieName = IO_Handler.EnterString($"{OwnerCinema}/{this}:\n" +
                     $"Enter the name of the movie beeing projected: ").ToUpper();
+                if (OwnProjections.ContainsKey(movieName))
+                {
+                    throw new OperationCanceledException("Operation canceled: This movie has already beeing projected here!");
+                }
                 byte movieLength = IO_Handler.EnterByte("Enter the length of this movie in minutes: ");
                 Movie currentMovie = new Movie(movieName, movieLength);
                 TestAndCreate(currentMovie);
@@ -62,17 +66,16 @@ namespace Cinemas
                     OwnProjections.Add(movie.Name, new Projection(this, movie));
                     IO_Handler.SuccessMessage($"New projection \"{movie.Name}\" has been added");
                 }
-                catch (ArgumentException)
+                catch (Exception e)
                 {
-                    IO_Handler.ErrorMessage("Operation canceled: This movie has already beeing projected here!");
+                    throw e;
                 }
         }
-
         public Projection FindProjectionByName()
         {
             #region debug message
 #if DEBUG
-            IO_Handler.LogItsCaller();
+                    IO_Handler.LogItsCaller();
 #endif
             #endregion
             if (OwnProjections.Count > 0)
@@ -83,12 +86,12 @@ namespace Cinemas
             {
                 throw new InvalidOperationException("Related to this Auditorium, there hasn't been any Projections created yet.");
             }
-        }
+        }      //Not implemented in PresentationLayer, so become obsolete:
         private Projection ReturnProjectionByName()
         {
             #region debug message
 #if DEBUG
-            IO_Handler.LogItsCaller();
+                    IO_Handler.LogItsCaller();
 #endif
             #endregion
             string projectionName = "";
@@ -105,26 +108,25 @@ namespace Cinemas
             Projection Result = OwnProjections[projectionName];
             IO_Handler.SuccessMessage("Projection found!");
             return Result;
-        }
+        }   //Not implemented in PresentationLayer, so become obsolete:
         #endregion
 
         #region OVERRIDES
         public override string ToString()
         {
             #region debug message
-#if DEBUG
+            #if DEBUG
             IO_Handler.LogItsCaller();
-#endif
+            #endif
             #endregion
             return $"Auditorium No.{Id}.";
         }
-
         public override bool Equals(object obj)
         {
             #region debug message
-#if DEBUG
+            #if DEBUG
             IO_Handler.LogItsCaller();
-#endif
+            #endif
             #endregion
             return obj is Auditorium auditorium
                 && (Id == auditorium.Id);

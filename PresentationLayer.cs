@@ -10,8 +10,9 @@ using System.Threading;
 
 namespace Cinemas
 {
-    class PresentationLayer
+    class PresentationLayer //Sorry, but it became an ugly freak...     8|
     {
+        #region Members
         static int index = 0;
         static int cinemaCounter = 0;
         static Cinema activeCinema;
@@ -47,7 +48,6 @@ namespace Cinemas
                 return itemName;
             }
         }
-
         delegate void MenuMethod();
         static Dictionary<int, MenuMethod> MainMenuMethods = new Dictionary<int, MenuMethod>();
         static Dictionary<int, MenuMethod> CinemasMenuMethods = new Dictionary<int, MenuMethod>();
@@ -57,6 +57,7 @@ namespace Cinemas
         static Dictionary<int, MenuMethod> InProjectionMenuMethods = new Dictionary<int, MenuMethod>();
         static Dictionary<int, MenuMethod> ReservationMenuMethods = new Dictionary<int, MenuMethod>();
         static Dictionary<string, Dictionary<int, MenuMethod>> DelegateDictionaries = new Dictionary<string, Dictionary<int, MenuMethod>>();
+        #endregion
 
         public PresentationLayer()
         {
@@ -86,7 +87,7 @@ namespace Cinemas
             MainMenu();
         }
 
-
+        #region Menus
         void MainMenu()
         {
             #region debug message
@@ -101,14 +102,44 @@ namespace Cinemas
             MenuItem[] MainMenuItems = { newCinema, cinemas, mostProjection };
             KeepDoingMenu(mainMenu, MainMenuItems);
         }
-
-
+        //In Main:
+        void NewCinemaMenu()
+        {
+            MenuTitle newCinemaMenu = "New Cinema Menu";
+            MenuItem[] newCinemaMenuItems = { };
+            ShowMenu(newCinemaMenu, newCinemaMenuItems);
+            string cinemaName = IO_Handler.EnterString("Please, enter the name of the new cinema: ");
+            if (ObjectContainer.CDB.Contains(ObjectContainer.CDB.Find(i => i.Name == cinemaName.ToUpper())))
+            {
+                throw new Exception("This Cinema has already exists!");
+            }
+            byte auditoriumCount = IO_Handler.EnterByte("Please, enter the number of auditoriums: ");
+            new Cinema(cinemaName, auditoriumCount);
+            CinemasMenuMethods[cinemaCounter++] = InCinemaMenu;
+            IO_Handler.SuccessMessage($"New Cinema: \"{cinemaName}\" has been created with {auditoriumCount} Auditorium{(auditoriumCount>1?"s":"")} in it.");
+            Thread.Sleep(sleepTime);
+        }
+        void CinemasMenu()
+        {
+            #region debug message
+#if DEBUG
+            IO_Handler.LogItsCaller();
+#endif
+            #endregion
+            MenuTitle cinemasMenu = "Cinemas";
+            MenuItem[] cinemasMenuItems = ListToMenuItemArray(ObjectContainer.CDB);
+            KeepDoingMenu(cinemasMenu, cinemasMenuItems);
+        }
         void MostViewedProjectionMenu()
         {
             MenuTitle mostViewedProjectionMenu = "Most Viewed Projection";
             MenuItem[] mostViewedProjectionMenuItems = { "Save to file" };
             try
             {
+                if (ObjectContainer.FindProjectionMostViewed().ReservedSeatsCount < 1)
+                {
+                    throw new Exception("Nothing to show");
+                }
                 Projection mostViewed = ObjectContainer.FindProjectionMostViewed();
                 string[] mostViewedData = {
                 $"{mostViewed.OwnMovie} ({mostViewed.OwnMovie.MinutesOfLength})",
@@ -122,39 +153,11 @@ namespace Cinemas
             catch (Exception)
             {
                 Console.WriteLine("\n\n");
-                Console.WriteLine("Nothing to show yet.".PadLeft(offset+10));
+                Console.WriteLine("Nothing to show yet.".PadLeft(offset + 10));
                 Thread.Sleep(1500);
             }
         }
-
-
-        void NewCinemaMenu()
-        {
-            MenuTitle newCinemaMenu = "New Cinema Menu";
-            MenuItem[] newCinemaMenuItems = { };
-            ShowMenu(newCinemaMenu, newCinemaMenuItems);
-            string cinemaName = IO_Handler.EnterString("Please, enter the name of the new cinema: ");
-            byte auditoriumCount = IO_Handler.EnterByte("Please, enter the number of auditoriums: ");
-            new Cinema(cinemaName, auditoriumCount);
-            CinemasMenuMethods[cinemaCounter++] = InCinemaMenu;
-            IO_Handler.SuccessMessage($"New Cinema: \"{cinemaName}\" has been created with {auditoriumCount} Auditorium{(auditoriumCount>1?"s":"")} in it.");
-            Thread.Sleep(sleepTime);
-        }
-
-
-        void CinemasMenu()
-        {
-            #region debug message
-#if DEBUG
-            IO_Handler.LogItsCaller();
-#endif
-            #endregion
-            MenuTitle cinemasMenu = "Cinemas";
-            MenuItem[] cinemasMenuItems = ListToMenuItemArray(ObjectContainer.CDB);
-            KeepDoingMenu(cinemasMenu, cinemasMenuItems);
-        }
-
-        
+        //In Subs:
         void InCinemaMenu()
         {
             #region debug message
@@ -173,8 +176,6 @@ namespace Cinemas
             }
             KeepDoingMenu(currentCinema, inCinemaMenuItems);
         }
-
-
         void InAuditoriumMenu()
         {
             #region debug message
@@ -190,8 +191,6 @@ namespace Cinemas
             string currentAuditorium = inAuditoriumMenu + activeCinema.OwnAuditoriums[(byte)(index+1)].ToString()+$"@{ activeCinema}";
             KeepDoingMenu(currentAuditorium, inAuditoriumMenuItems);
         }
-
-
         void InProjectionMenu()
         {
             MenuTitle inProjectionMenu = $"Projections of {activeAuditorium}@{activeCinema}";
@@ -203,8 +202,6 @@ namespace Cinemas
             }
             KeepDoingMenu(inProjectionMenu, inProjectionMenuItems);
         }
-
-
         void ReservationMenu()
         {
             MenuTitle inProjectionMenu = $"Reservations for {activeProjection.OwnMovie}({activeProjection.OwnMovie.MinutesOfLength})";
@@ -214,7 +211,7 @@ namespace Cinemas
             ReservationMenuMethods[2] = delegate () { activeProjection.PrintOwnSeatsByAvailability(); Console.WriteLine("\n\nPress any key to return..."); };
             KeepDoingMenu(inProjectionMenu, inProjectionMenuItems);
         }
-
+        #endregion
 
         #region control+helper functions
         void KeepDoingMenu(MenuTitle menuTitle, MenuItem[] MenuItems)
@@ -271,6 +268,12 @@ namespace Cinemas
                         goto case ConsoleKey.Clear;
                     case ConsoleKey.DownArrow:
                         if (++index == MenuItems.Length) index = 0;
+                        goto case ConsoleKey.Clear;
+                    case ConsoleKey.PageDown:
+                        index = MenuItems.Length - 1;
+                        goto case ConsoleKey.Clear;
+                    case ConsoleKey.PageUp:
+                        index = 0;
                         goto case ConsoleKey.Clear;
                     case ConsoleKey.Enter:
                         Console.Clear();

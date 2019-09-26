@@ -15,14 +15,19 @@ namespace Cinemas
     class Projection
     {
         public string Name { get; private set; }
-        public enum Seat
+        private enum Seat
         {
             Available = 0x0,
             UnAvailable = 0x1
         }
+        private enum TableElement
+        {
+            row,
+            column
+        }
         public Auditorium OwnerAuditorium { get; private set; }
         public Movie OwnMovie { get; private set; }
-        public Seat[,] Seats { get; private set; }
+        private Seat[,] Seats { get; set; }
         public short ReservedSeatsCount { get; private set; } = 0;
 
         public Projection(Auditorium OwnerAuditorium, Movie OwnMovie)
@@ -102,12 +107,12 @@ namespace Cinemas
         public void ReserveSeat()
         {
             #region debug message
-#if DEBUG
+            #if DEBUG
             Program.LogThisCaller();
-#endif
+            #endif
             #endregion
-            byte row = (byte)(CheckAndReturnSeat(true) - 1);
-            byte col = (byte)(CheckAndReturnSeat(false) - 1);
+            byte row = CheckAndReturnPosition(TableElement.row);
+            byte col = CheckAndReturnPosition(TableElement.column);
             if (GetSeatAvailability(row, col) == Seat.Available)
             {
                 FlipSeatAvailabilty(row, col);
@@ -121,12 +126,12 @@ namespace Cinemas
         public void FreeSeat()
         {
             #region debug message
-#if DEBUG
+            #if DEBUG
             Program.LogThisCaller();
-#endif
+            #endif
             #endregion
-            byte row = (byte)(CheckAndReturnSeat(true)-1);
-            byte col = (byte)(CheckAndReturnSeat(false)-1);
+            byte row = CheckAndReturnPosition(TableElement.row);
+            byte col = CheckAndReturnPosition(TableElement.column);
             if (GetSeatAvailability(row, col) == Seat.UnAvailable)
             {
                 FlipSeatAvailabilty(row, col);
@@ -155,24 +160,36 @@ namespace Cinemas
             #endregion
             Seats[row, col] = Seats[row, col] ^ Seat.UnAvailable;
         }
-        private byte CheckAndReturnSeat(bool row)//this is sooo BAD!!!
+        private byte CheckAndReturnPosition(TableElement element)
         {
             byte input;
-            if (row)
+            if (element==TableElement.row)
             {
                 do
                 {
-                    input = IO_Handler.EnterByte("Please, enter the number of rows: "); 
-                } while (input < 0 || input > OwnerAuditorium.Rows);
+                    input = IO_Handler.EnterByte("Please, enter the number of rows: ");
+                    if (input < 1 || input > OwnerAuditorium.Rows)
+                    {
+                        IO_Handler.ErrorMessage($"Invalid input. Pick from range [1-{OwnerAuditorium.Rows}]");
+                    }
+                } while (input < 1 || input > OwnerAuditorium.Rows);
+            }
+            else if(element == TableElement.column)
+            {
+                do
+                {
+                    input = IO_Handler.EnterByte("Please, enter the number of columns: ");
+                    if (input < 1 || input > OwnerAuditorium.Columns)
+                    {
+                        IO_Handler.ErrorMessage($"Invalid input. Pick from range [1-{OwnerAuditorium.Columns}]");
+                    }
+                } while (input < 1 || input > OwnerAuditorium.Columns);
             }
             else
             {
-                do
-                {
-                    input = IO_Handler.EnterByte("Please, enter the number of columns: "); 
-                } while (input < 0 || input > OwnerAuditorium.Columns);
+                throw new InvalidOperationException("There's no such TableElement! Where the hell did you get that from???");
             }
-            return input;
+            return (byte)(input-1);
         }
         #endregion
 
@@ -180,18 +197,18 @@ namespace Cinemas
         public override string ToString()
         {
             #region debug message
-#if DEBUG
+            #if DEBUG
             Program.LogThisCaller();
-#endif
+            #endif
             #endregion
             return $"Projection of:\"{Name}\"";
         }
         public override bool Equals(object obj)
         {
             #region debug message
-#if DEBUG
+            #if DEBUG
             Program.LogThisCaller();
-#endif
+            #endif
             #endregion
             return obj is Projection projection
                 && String.Equals(this.Name, projection.Name)

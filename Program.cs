@@ -10,7 +10,13 @@ namespace Cinemas
         static void Main()
         {
             Console.CursorVisible = false;
-            Console.Write("Contorols: \nEnter menu: Enter Key \nQuit menu: Escape Key \nNavigate up: UpArrow \nNavigate down: DownArrow \n\n\tPress any key to continue!");
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            Console.WriteLine("Contorols:");
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write("Enter menu: EnterKey \nQuit menu: EscapeKey \nNavigate up: UpArrow \nNavigate down: DownArrow \nFirst Menu Item: PageUp \nLast Menu Item: PageDown \n\n");
+            Console.ResetColor();
+            Console.WriteLine("\tPress any key to continue!");
             Console.ReadKey(false);
             Console.Clear();
             PresentationLayer PL = new PresentationLayer();
