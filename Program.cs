@@ -1,9 +1,4 @@
-﻿#define DEBUG
-#undef DEBUG
-
-using System;
-
-namespace Cinemas
+﻿namespace Cinemas
 {
     class Program
     {
